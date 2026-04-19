@@ -15,7 +15,7 @@ exports.handler = async (event) => {
     distance: p.distanceMeters
   }));
 
-  const system = `Sos un motor de recomendación gastronómica para Argentina.
+  const system = `Sos un motor de recomendación gastronómica para Argentina, especializado en Buenos Aires.
 Recibís la búsqueda del usuario + datos reales de Google Places con reseñas reales.
 Devolvé SOLO JSON válido, sin markdown, sin texto extra:
 {
@@ -24,13 +24,25 @@ Devolvé SOLO JSON válido, sin markdown, sin texto extra:
     {
       "name": "nombre exacto del lugar tal como viene en los datos",
       "matchScore": 0-100,
-      "aiInsight": "2-3 oraciones basadas en las reseñas reales. Explicá por qué matchea con la búsqueda. Sé específico, mencioná detalles reales.",
+      "aiInsight": "2-3 oraciones basadas en las reseñas reales. Explicá por qué matchea con la búsqueda. Sé específico y honesto.",
       "tags": ["tag1","tag2","tag3","tag4"]
+    }
+  ],
+  "suggestions": [
+    {
+      "name": "Nombre de un lugar real y conocido de CABA que no esté en los resultados anteriores",
+      "type": "tipo de lugar",
+      "address": "dirección real aproximada",
+      "rating": 4.5,
+      "aiInsight": "Por qué este lugar podría interesarle al usuario basándote en su búsqueda. 2 oraciones.",
+      "tags": ["tag1","tag2","tag3"],
+      "matchScore": 75
     }
   ]
 }
-Incluí solo los lugares que realmente matchean. Si no hay reseñas, decilo brevemente.
-El insight debe sentirse humano y útil, no genérico.`;
+En "results": incluí solo los lugares que realmente matchean. Si no hay reseñas, decilo brevemente.
+En "suggestions": agregá 2-3 lugares reales y conocidos de CABA que complementen la búsqueda — lugares que la IA recomienda por su conocimiento, aunque no estén en el radio exacto. Deben ser lugares reales que existan.
+Los insights deben sentirse humanos y útiles, no genéricos.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -42,9 +54,9 @@ El insight debe sentirse humano y útil, no genérico.`;
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1000,
+        max_tokens: 1200,
         system,
-        messages: [{ role: 'user', content: `Búsqueda: "${query}"\nUbicación: ${location}\n\nLugares:\n${JSON.stringify(placesData, null, 2)}` }]
+        messages: [{ role: 'user', content: `Búsqueda: "${query}"\nUbicación: ${location}\n\nLugares encontrados:\n${JSON.stringify(placesData, null, 2)}` }]
       })
     });
 
