@@ -26,3 +26,8 @@
   from = "/api/reverse-geocode"
   to = "/.netlify/functions/reverse-geocode"
   status = 200
+
+[[redirects]]
+  from = "/api/photo"
+  to = "/.netlify/functions/photo"
+  status = 200
